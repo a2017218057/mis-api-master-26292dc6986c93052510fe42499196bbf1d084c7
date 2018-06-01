@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="mis-api-master-26292dc6986c93052510fe42499196bbf1d084c7_main" target="1.8" />
+      <module name="mis-api-master-26292dc6986c93052510fe42499196bbf1d084c7_test" target="1.8" />
+      <module name="mis-api-master_main" target="1.8" />
+      <module name="mis-api-master_test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
