@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -210,8 +211,22 @@ public class InfoController {
     {
         //String root = "img/";
         System.out.println("文件名称："+pathdoc);
-        pathdoc = pathdoc.replace("%2B","+");
+
+
+        //pathdoc = pathdoc.replace("%2B","+");
         //URLDecoder.decode(pathdoc,"UTF-8");
+
+        /*String docname = pathdoc.substring(0,pathdoc.lastIndexOf("."));
+        String doctype = pathdoc.substring(pathdoc.lastIndexOf("."));
+        BCryptPasswordEncoder filepathEncoder = new BCryptPasswordEncoder();
+        pathdoc = "doc/"+filepathEncoder.encode(docname)+doctype;
+
+        String previewname = pathpreview.substring(0,pathpreview.lastIndexOf("."));
+        String previewtype = pathpreview.substring(pathpreview.lastIndexOf("."));
+        pathpreview = "preview/"+filepathEncoder.encode(previewname)+previewtype;
+        System.out.println(pathpreview);*/
+        pathdoc = "doc/"+pathdoc;
+        pathpreview = "preview/"+pathpreview;
 
         User curUser = (User)httpSession.getAttribute("user");
         //LoadInfo info = new LoadInfo(null,name,dynasty,type,place,null,null,null,curUser.getId());
@@ -280,17 +295,22 @@ public class InfoController {
 
     }
     @RequestMapping("/leave/add/uploaddoc")
-    public ErrorReporter uploaddoc(@RequestParam("file") MultipartFile file){
+    public ErrorReporter uploaddoc(@RequestParam("file") MultipartFile file,String filepath){
         String path = "src/main/resources/static/doc/";
+
+        System.out.println("文件路径"+filepath);
         //System.out.println("上传");
         if (!file.isEmpty()) {
             try {
-
+                /*BCryptPasswordEncoder filepathEncoder = new BCryptPasswordEncoder();
+                String filename = filepath.substring(0,filepath.lastIndexOf("."));
+                String filetype = filepath.substring(filepath.lastIndexOf("."));
+                filepath = filepathEncoder.encode(filename)+filetype;*/
                 String tcatpath = httpSession.getServletContext().getRealPath("/");
                 System.out.println(tcatpath);
 
                 //String path = "src/main/resources/static/img/";
-                File f = new File(path+file.getOriginalFilename());
+                File f = new File(path+filepath);
 
                 byte[] bytes = file.getBytes();
                 BufferedOutputStream out = new BufferedOutputStream(
@@ -317,17 +337,24 @@ public class InfoController {
 
     }
     @RequestMapping("/leave/add/uploadpreview")
-    public ErrorReporter uploadpreview(@RequestParam("file") MultipartFile file){
+    public ErrorReporter uploadpreview(@RequestParam("file") MultipartFile file,String filepath){
         String path = "src/main/resources/static/preview/";
+
+
         //System.out.println("上传");
         if (!file.isEmpty()) {
             try {
+                /*BCryptPasswordEncoder filepathEncoder = new BCryptPasswordEncoder();
+                String filename = filepath.substring(0,filepath.lastIndexOf("."));
+                String filetype = filepath.substring(filepath.lastIndexOf("."));
+                filepath = filepathEncoder.encode(filename)+filetype;
+                System.out.println("预览路径"+filepath);*/
 
                 String tcatpath = httpSession.getServletContext().getRealPath("/");
                 System.out.println(tcatpath);
                 System.out.println("预览");
                 //String path = "src/main/resources/static/img/";
-                File f = new File(path+file.getOriginalFilename());
+                File f = new File(path+filepath);
 
                 byte[] bytes = file.getBytes();
                 BufferedOutputStream out = new BufferedOutputStream(
@@ -357,7 +384,7 @@ public class InfoController {
     public ResponseEntity<byte[]> downloaddoc(String pathdoc, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String rootpath = "http://localhost:8080/";
-        String r = "F:/GitHub/mis-api-master/src/main/resources/static/";
+        String r = "F:/GitHub/mis-api-master-26292dc6986c93052510fe42499196bbf1d084c7/src/main/resources/static/";
         pathdoc = pathdoc.replace("%2B","+");
         File file=new File(r+pathdoc);
         //int pos = pathpic.indexOf("/");

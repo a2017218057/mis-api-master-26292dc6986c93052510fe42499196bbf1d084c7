@@ -127,9 +127,9 @@ public class ApplyController {
     }*/
 
     @RequestMapping("/leave/apply/modify")
-    public ErrorReporter modify(String id, String name, String dynasty, String place, String type, int uid,boolean ifcheck,boolean ifcheckdown) {
+    public ErrorReporter modify(String id, String name, String dynasty, String place, String type, int uid,boolean ifcheck,boolean ifcheckdown,String tag) {
 
-
+        System.out.println("标签"+tag);
         if ( !loginService.isLogin()) {
             return new ErrorReporter(4, "not login");
         }
@@ -152,6 +152,7 @@ public class ApplyController {
         la.setType(type);
         la.setIfcheck(ifcheck);
         la.setIfcheckdown(ifcheckdown);
+        la.setTag(tag);
         long time = System.currentTimeMillis();
         //String t = String.valueOf(time/1000);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
