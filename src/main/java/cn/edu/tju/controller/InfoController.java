@@ -225,9 +225,12 @@ public class InfoController {
         String previewtype = pathpreview.substring(pathpreview.lastIndexOf("."));
         pathpreview = "preview/"+filepathEncoder.encode(previewname)+previewtype;
         System.out.println(pathpreview);*/
-        pathdoc = "doc/"+pathdoc;
-        pathpreview = "preview/"+pathpreview;
-
+        /*
+        String rootpath = File.pathSeparator+"src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator;
+        pathdoc = System.getProperty("user.dir")+rootpath+"doc"+File.separator+pathdoc;
+        pathpreview = System.getProperty("user.dir")+rootpath+"preview"+File.separator+pathpreview;
+*/      pathdoc = "doc"+File.separator+pathdoc;
+        pathpreview = "preview"+File.separator+pathpreview;
         User curUser = (User)httpSession.getAttribute("user");
         //LoadInfo info = new LoadInfo(null,name,dynasty,type,place,null,null,null,curUser.getId());
         Date day = new Date();
@@ -296,7 +299,8 @@ public class InfoController {
     }
     @RequestMapping("/leave/add/uploaddoc")
     public ErrorReporter uploaddoc(@RequestParam("file") MultipartFile file,String filepath){
-        String path = "src/main/resources/static/doc/";
+        String path = "src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator+"preview"+File.separator;
+        //path = System.getProperty("user.dir")+path;
 
         System.out.println("文件路径"+filepath);
         //System.out.println("上传");
@@ -338,9 +342,11 @@ public class InfoController {
     }
     @RequestMapping("/leave/add/uploadpreview")
     public ErrorReporter uploadpreview(@RequestParam("file") MultipartFile file,String filepath){
-        String path = "src/main/resources/static/preview/";
+        String path = "src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator+"preview"+File.separator;
 
-
+        System.out.println(System.getProperty("user.dir")+"-------------------------------------------------");
+        //path =System.getProperty("user.dir")+path;
+        System.out.println(path+"=================================================");
         //System.out.println("上传");
         if (!file.isEmpty()) {
             try {
@@ -384,9 +390,9 @@ public class InfoController {
     public ResponseEntity<byte[]> downloaddoc(String pathdoc, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         String rootpath = "http://localhost:8080/";
-        String r = "F:/GitHub/mis-api-master-26292dc6986c93052510fe42499196bbf1d084c7/src/main/resources/static/";
-        pathdoc = pathdoc.replace("%2B","+");
-        File file=new File(r+pathdoc);
+        //String r = "F:/GitHub/mis-api-master-26292dc6986c93052510fe42499196bbf1d084c7/src/main/resources/static/";
+        //pathdoc = pathdoc.replace("%2B","+");
+        File file=new File(pathdoc);
         //int pos = pathpic.indexOf("/");
         System.out.println(file.getName());
         //String filename = pathpic.substring(pos+1);
