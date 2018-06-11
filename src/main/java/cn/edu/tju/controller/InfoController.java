@@ -229,9 +229,9 @@ public class InfoController {
         String rootpath = File.pathSeparator+"src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator;
         pathdoc = System.getProperty("user.dir")+rootpath+"doc"+File.separator+pathdoc;
         pathpreview = System.getProperty("user.dir")+rootpath+"preview"+File.separator+pathpreview;
-*/      pathdoc = "doc"+File.separator+pathdoc;
-        pathpreview = "preview"+File.separator+pathpreview;
-        pathmovie = "preview"+File.separator+pathmovie;
+*/      pathdoc = "doc/"+pathdoc;
+        pathpreview = "preview/"+pathpreview;
+        pathmovie = "preview/"+pathmovie;
         User curUser = (User)httpSession.getAttribute("user");
         //LoadInfo info = new LoadInfo(null,name,dynasty,type,place,null,null,null,curUser.getId());
         Date day = new Date();
@@ -300,8 +300,9 @@ public class InfoController {
     }
     @RequestMapping("/leave/add/uploaddoc")
     public ErrorReporter uploaddoc(@RequestParam("file") MultipartFile file,String filepath){
-        String path = "src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator+"doc"+File.separator;
-        //path = System.getProperty("user.dir")+path;
+        //String path = "src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator+"doc"+File.separator;
+        String path = "/storzone/doc/";
+        path = System.getProperty("user.dir")+path;
 
         System.out.println("文件路径"+filepath);
         //System.out.println("上传");
@@ -344,9 +345,9 @@ public class InfoController {
     @RequestMapping("/leave/add/uploadpreview")
     public ErrorReporter uploadpreview(@RequestParam("file") MultipartFile file,String filepath){
         //String path = File.separator+"src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator+"preview"+File.separator;
-        String path = "D:/staticresource/";
+        String path = "/storzone/preview/";
         System.out.println(System.getProperty("user.dir")+"-------------------------------------------------");
-        //path =System.getProperty("user.dir")+path;
+        path =System.getProperty("user.dir")+path;
         System.out.println(path+"=================================================");
         //System.out.println("上传");
         if (!file.isEmpty()) {
@@ -393,7 +394,7 @@ public class InfoController {
         String rootpath = "http://localhost:8080/";
         //String r = "F:/GitHub/mis-api-master-26292dc6986c93052510fe42499196bbf1d084c7/src/main/resources/static/";
         //pathdoc = pathdoc.replace("%2B","+");
-        File file=new File("src/main/resources/static/"+pathdoc);
+        File file=new File(System.getProperty("user.dir")+"/storzone/"+pathdoc);
         //int pos = pathpic.indexOf("/");
         System.out.println(file.getName());
         //String filename = pathpic.substring(pos+1);
