@@ -11,12 +11,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.google.gson.Gson;
 
 @SpringBootApplication
-public class AskForLeaveApplication {
+public class AskForLeaveApplication{
 
 	public static void main(String[] args) {
 		SpringApplication.run(AskForLeaveApplication.class, args);
@@ -62,4 +63,5 @@ public class AskForLeaveApplication {
 		registration.setOrder(1);
 		return registration;
 	}
+
 }
