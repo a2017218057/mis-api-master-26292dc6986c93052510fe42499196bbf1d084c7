@@ -1,6 +1,7 @@
 package cn.edu.tju.dao;
 
 
+import antlr.PythonCharFormatter;
 import cn.edu.tju.model.LoadInfo;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.boot.autoconfigure.elasticsearch.jest.JestProperties;
@@ -36,4 +37,8 @@ public interface LoadInfoRepo extends CrudRepository<LoadInfo, Integer>, PagingA
     public long countByIdAndNameContainingOrNameContainingAndIfcheck(String username, String name, String name1, Boolean c);
     public long countByIdAndTagContainingOrTagContainingAndIfcheck(String username, String tag, String tag1, Boolean c);
     public long countByifcheck(Boolean c);
+
+    /*统计页面*/
+    public long countByIfcheckdown(Boolean c);
+    public long countByIfcheck(Boolean c);
 }

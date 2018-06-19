@@ -3,6 +3,7 @@ package cn.edu.tju.controller;
 import cn.edu.tju.dao.LeaveAppRepo;
 import cn.edu.tju.dao.LoadInfoRepo;
 import cn.edu.tju.dao.StaffRepo;
+import cn.edu.tju.dao.UserRepo;
 import cn.edu.tju.dto.*;
 import cn.edu.tju.model.LeaveApplication;
 import cn.edu.tju.model.LoadInfo;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +56,9 @@ public class InfoController {
     protected StaffRepo staffRepo;
     @Autowired
     protected LoadInfoRepo loadInfoRepo;
+    @Autowired
+    protected UserRepo userRepo;
+
 
    /* @RequestMapping("/leave/review/todoList")
     public ErrorReporter todoList (String username, int page, int pageSize) {
@@ -427,88 +432,27 @@ public class InfoController {
         HttpStatus httpStatus = HttpStatus.OK;
         return new ResponseEntity<byte[]>(bt,headers,httpStatus);
     }
-
-
-    @RequestMapping("/leave/review/action")
-    public ErrorReporter action(int id, int status, String reviewReason) {
-
-        if ( !loginService.isLogin()) {
-            return new ErrorReporter(4, "not login");
-        }
-
-        User curUser = (User) httpSession.getAttribute("user");
-        Staff curStaff = staffRepo.findOne(curUser.getId());
-
-        LeaveApplication la;
-        if (leaveAppRepo.exists(id)) {
-            la = leaveAppRepo.findOne(id);
-        } else {
-            return new ErrorReporter(19, "application id don't exist");
-        }
-
-        if ( !la.getManagerId().equals(curStaff.getId())) {
-            return new ErrorReporter(23, "no authority for this leave application");
-        }
-
-        if (la.getStatus() != 2) {
-            return new ErrorReporter(24, "could not review this leave application, has reviewed or hasn't publish");
-        }
-
-        if (status != 3 && status != 4) {
-            return new ErrorReporter(25, "wrong status");
-        }
-
-        Staff applicantStaff = staffRepo.findOne(la.getApplicantId());
-        Gson gson = new Gson();
-        int[] leaveDetail = gson.fromJson(applicantStaff.getLeaveDetail(), int[].class);
-        LocalDate initialDay = new LocalDate(2016,1,1);
-        LocalDate startDay = new LocalDate(la.getStartTime()*1000L);
-        LocalDate endDay = new LocalDate(la.getEndTime()*1000L);
-        int startDayIndex = Days.daysBetween(initialDay, startDay).getDays();
-        int endDayIndex = Days.daysBetween(initialDay, endDay).getDays();
-
-        if (status == 4) {  // not approved
-            for (int i = startDayIndex; i <= endDayIndex; i++) {
-                if(leaveDetail[i] >= 100) {
-                    leaveDetail[i] -= 100;
-                }
-            }
-            if (la.getType() == 1) {
-                int annualLeft = applicantStaff.getAnnualLeft();
-                for (int i = startDayIndex; i <= endDayIndex; i++) {
-                    if(leaveDetail[i] == 0) {
-                        annualLeft ++;
-                    }
-                }
-                applicantStaff.setAnnualLeft(annualLeft);
-            }
-        } else {    // status == 3, approved
-            if (Arrays.asList(1,2,3,4,5,6,7).contains(la.getType())) {
-                for (int i = startDayIndex; i <= endDayIndex; i++) {
-                    if (leaveDetail[i] == 100) {
-                        leaveDetail[i] = la.getType();
-                    }
-                }
-            } else if (la.getType() == 10) {
-                for (int i = startDayIndex; i <= endDayIndex; i++) {
-                    if (leaveDetail[i] == 109 || leaveDetail[i] == 108) {
-                        leaveDetail[i] -= 90;
-                        // 18, 19 in leave detail means work at holiday or weekends
-                    }
-                }
-            } else {
-                return new ErrorReporter(13, "unknown type");
-            }
-        }
-        applicantStaff.setLeaveDetail(gson.toJson(leaveDetail));
-        staffRepo.save(applicantStaff);
-
-        la.setStatus(status);
-        la.setReviewReason(reviewReason);
-        int curTime = (int) (System.currentTimeMillis() / 1000L);
-        la.setReviewTime(curTime);
-        leaveAppRepo.save(la);
-
-        return new ErrorReporter(0, "success");
+    @RequestMapping("/leave/statistics/totaluser")
+    public ErrorReporter totaluser(){
+        float totaluser = userRepo.count();
+        System.out.println("用户总数"+totaluser);
+        ResponseAnalysis data = new ResponseAnalysis(totaluser,0,0,0,null,null);
+        return new ErrorReporter(0, "success", data);
     }
+    @RequestMapping("/leave/statistics/totaldoc")
+    public ErrorReporter totaldoc(){
+        float totaldoc = loadInfoRepo.count();
+        System.out.println("文件总数"+totaldoc);
+        float totalisdown = loadInfoRepo.countByIfcheckdown(true);
+        System.out.println("可下载文件总数"+totalisdown);
+        DecimalFormat df = new DecimalFormat("0.00%");
+        float totalischeck = loadInfoRepo.countByIfcheck(true);
+        System.out.println("可查看数据总数"+totalischeck);
+        float perdown = totalisdown/totaldoc;
+        float percheck = totalischeck/totaldoc;
+        System.out.println("可查看数据百分比"+percheck);
+        ResponseAnalysis data = new ResponseAnalysis(0, totaldoc, totalisdown,totalischeck, df.format(perdown), df.format(percheck));
+        return new ErrorReporter(0, "success", data);
+    }
+
 }
