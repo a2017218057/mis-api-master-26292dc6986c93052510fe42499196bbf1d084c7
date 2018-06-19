@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.HashMap;
 
 import java.io.*;
 
@@ -74,7 +76,11 @@ public class InfoController {
         ResponseListData data = new ResponseListData(page, pageSize, total, curStaff.getId(), list);
         return new ErrorReporter(0, "success", data);
     }*/
-
+   @RequestMapping("/hello")
+   public String hello(){
+       System.out.println("xxxxxxxxxxxxxxxxxxxxxxx");
+       return "index.html";
+   }
     @RequestMapping("/leave/load/doneList")
     public ErrorReporter doneList(String username, int page, int pageSize) {
 
@@ -88,8 +94,8 @@ public class InfoController {
             //Staff curStaff = staffRepo.findOne(curUser.getId());
             //System.out.println("当前用户" + curUser.getId());
             System.out.println(username);
-            long total = loadInfoRepo.count();
-            System.out.println("一共"+total);
+            long total = loadInfoRepo.countByifcheck(true);
+            System.out.println("大厅列表一共"+total);
             Pageable pageable = new PageRequest(page - 1, pageSize);
             List<LoadInfo> las = loadInfoRepo.findByifcheckOrderByLoadtimeDesc(true, pageable);
             List<ResponseLoadInfo> list = new ArrayList<>();
@@ -112,14 +118,14 @@ public class InfoController {
         else {
 
             User curUser = (User) httpSession.getAttribute("user");
-            System.out.println("进来"+curUser);
+            System.out.println("查看个人信息，进来"+curUser.getId());
             //Staff curStaff = staffRepo.findOne(curUser.getId());
             //System.out.println("当前用户" + curUser.getId());
             System.out.println(username);
             long total = loadInfoRepo.countById(curUser.getId());
             System.out.println("一共"+total);
             Pageable pageable = new PageRequest(page - 1, pageSize);
-            List<LoadInfo> las = loadInfoRepo.findById(curUser.getId(), pageable);
+            List<LoadInfo> las = loadInfoRepo.findByIdOrderByLoadtimeDesc(curUser.getId(), pageable);
             List<ResponseLoadInfo> list = new ArrayList<>();
             for (LoadInfo e : las) {
                 list.add(new ResponseLoadInfo(e));
@@ -142,9 +148,9 @@ public class InfoController {
             Pageable pageable = new PageRequest(page - 1, pageSize);
             if(name!=""&&tag!=""){
 
-                long total = loadInfoRepo.countByNameContainingAndTagContainingAndIfcheck(name,tag,true);
-                System.out.println("total:"+total);
-                List<LoadInfo> las = loadInfoRepo.findByNameContainingAndTagContainingAndIfcheck(name,tag,true,pageable);
+                long total = loadInfoRepo.countByIdAndNameContainingAndTagContainingOrNameContainingAndTagContainingAndIfcheck(username,name,tag,name,tag,true);
+                System.out.println("标签和名字total:"+total);
+                List<LoadInfo> las = loadInfoRepo.findByIdAndNameContainingAndTagContainingOrNameContainingAndTagContainingAndIfcheck(username,name,tag,name,tag,true,pageable);
                 List<ResponseLoadInfo> list = new ArrayList<>();
                 for (LoadInfo e : las){
                     list.add(new ResponseLoadInfo(e));
@@ -153,10 +159,10 @@ public class InfoController {
                 return new ErrorReporter(0, "success", data);
             }
             else if(name!=""&&tag==""){
-                long total = loadInfoRepo.countByNameContainingAndIfcheck(name,true);
+                long total = loadInfoRepo.countByIdAndNameContainingOrNameContainingAndIfcheck(username,name,name,true);
                 System.out.println("一共是："+total);
 
-                List<LoadInfo> las = loadInfoRepo.findByNameContainingAndIfcheck(name,true,pageable);
+                List<LoadInfo> las = loadInfoRepo.findByIdAndNameContainingOrNameContainingAndIfcheck(username,name,name,true,pageable);
                 List<ResponseLoadInfo> list = new ArrayList<>();
                 for (LoadInfo e : las){
                     list.add(new ResponseLoadInfo(e));
@@ -165,10 +171,10 @@ public class InfoController {
                 return new ErrorReporter(0, "success", data);
             }
             else if(name==""&&tag!=""){
-                long total = loadInfoRepo.countByTagContainingAndIfcheck(tag,true);
+                long total = loadInfoRepo.countByIdAndTagContainingOrTagContainingAndIfcheck(username,tag,tag,true);
                 System.out.println("一共是："+total);
 
-                List<LoadInfo> las = loadInfoRepo.findByTagContainingAndIfcheck(tag,true,pageable);
+                List<LoadInfo> las = loadInfoRepo.findByIdAndTagContainingOrTagContainingAndIfcheck(username,tag,tag,true,pageable);
                 List<ResponseLoadInfo> list = new ArrayList<>();
                 for (LoadInfo e : las){
                     list.add(new ResponseLoadInfo(e));
@@ -229,9 +235,9 @@ public class InfoController {
         String rootpath = File.pathSeparator+"src"+File.separator+"main"+File.separator+"resources"+File.separator+"static"+File.separator;
         pathdoc = System.getProperty("user.dir")+rootpath+"doc"+File.separator+pathdoc;
         pathpreview = System.getProperty("user.dir")+rootpath+"preview"+File.separator+pathpreview;
-*/      pathdoc = "doc"+File.separator+pathdoc;
-        pathpreview = "preview"+File.separator+pathpreview;
-        pathmovie = "preview"+File.separator+pathmovie;
+*/      pathdoc = "doc/"+pathdoc;
+        pathpreview = "preview/"+pathpreview;
+        pathmovie = "preview/"+pathmovie;
         User curUser = (User)httpSession.getAttribute("user");
         //LoadInfo info = new LoadInfo(null,name,dynasty,type,place,null,null,null,curUser.getId());
         Date day = new Date();

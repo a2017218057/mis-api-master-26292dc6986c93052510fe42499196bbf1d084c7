@@ -201,7 +201,7 @@ public class ApplyController {
         return new ErrorReporter(0, "success");
     }
 
-    @RequestMapping("/leave/apply/draftList")
+    /*@RequestMapping("/leave/apply/draftList")
     public ErrorReporter draftList(String username, int page, int pageSize) {
 
         if ( !loginService.isLogin()) {
@@ -226,7 +226,7 @@ public class ApplyController {
             ResponseListData data = new ResponseListData(page, pageSize, total, username, list);
             return new ErrorReporter(0, "success", data);
         }
-    }
+    }*/
 
    /* @RequestMapping("/leave/apply/publishList")
     public ErrorReporter publishList(String username, int page, int pageSize) {
